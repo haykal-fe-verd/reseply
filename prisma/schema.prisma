@@ -1,0 +1,196 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../lib/generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id               String      @id
+    name             String
+    email            String
+    emailVerified    Boolean     @default(false)
+    image            String?
+    createdAt        DateTime    @default(now())
+    updatedAt        DateTime    @updatedAt
+    sessions         Session[]
+    accounts         Account[]
+    twoFactorEnabled Boolean     @default(false)
+    twoFactor        TwoFactor[]
+    passkeys         Passkey[]
+    role             String?     @default("user")
+    banned           Boolean?    @default(false)
+    banReason        String?
+    banExpires       DateTime?
+    favorites        Favorite[]
+
+    @@unique([email])
+    @@map("user")
+}
+
+model Session {
+    id        String   @id
+    expiresAt DateTime
+    token     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    ipAddress String?
+    userAgent String?
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([token])
+    @@index([userId])
+    @@map("session")
+}
+
+model Account {
+    id                    String    @id
+    accountId             String
+    providerId            String
+    userId                String
+    user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accessToken           String?
+    refreshToken          String?
+    idToken               String?
+    accessTokenExpiresAt  DateTime?
+    refreshTokenExpiresAt DateTime?
+    scope                 String?
+    password              String?
+    createdAt             DateTime  @default(now())
+    updatedAt             DateTime  @updatedAt
+
+    @@index([userId])
+    @@map("account")
+}
+
+model Verification {
+    id         String   @id
+    identifier String
+    value      String
+    expiresAt  DateTime
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@index([identifier])
+    @@map("verification")
+}
+
+model TwoFactor {
+    id          String @id
+    userId      String
+    secret      String
+    backupCodes String
+    user        User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+    @@index([userId])
+    @@map("twoFactor")
+}
+
+model Passkey {
+    id           String   @id
+    name         String?
+    publicKey    String
+    userId       String
+    credentialID String
+    counter      Int
+    deviceType   String
+    backedUp     Boolean
+    transports   String?
+    createdAt    DateTime @default(now())
+    aaguid       String?
+    user         User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+    @@index([userId])
+    @@map("passkey")
+}
+
+//! CUSTOM
+
+enum CategoryType {
+    DISH
+    CUISINE
+    DIET
+}
+
+model Category {
+    id      String           @id @default(cuid())
+    name    String
+    slug    String           @unique
+    type    CategoryType
+    recipes RecipeCategory[]
+
+    @@index([type])
+    @@map("category")
+}
+
+model Recipe {
+    id           String              @id @default(cuid())
+    title        String
+    slug         String              @unique
+    description  String?
+    imageUrl     String?
+    prepMinutes  Int?
+    cookMinutes  Int?
+    servings     Int?
+    createdAt    DateTime            @default(now())
+    updatedAt    DateTime            @updatedAt
+    ingredients  RecipeIngredient[]
+    instructions RecipeInstruction[]
+    categories   RecipeCategory[]
+    favorites    Favorite[]
+
+    @@index([slug])
+    @@map("recipe")
+}
+
+model Favorite {
+    id        String   @id @default(cuid())
+    userId    String
+    recipeId  String
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, recipeId])
+    @@index([userId])
+    @@index([recipeId])
+    @@map("favorite")
+}
+
+model RecipeIngredient {
+    id       String  @id @default(cuid())
+    recipeId String
+    recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+    name     String
+    amount   String?
+    unit     String?
+    order    Int     @default(0)
+
+    @@index([recipeId])
+    @@map("recipe_ingredient")
+}
+
+model RecipeInstruction {
+    id         String @id @default(cuid())
+    recipeId   String
+    recipe     Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+    stepNumber Int
+    content    String
+
+    @@index([recipeId])
+    @@map("recipe_instruction")
+}
+
+model RecipeCategory {
+    recipeId   String
+    categoryId String
+    recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+    category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@id([recipeId, categoryId])
+    @@index([categoryId])
+    @@map("recipe_category")
+}

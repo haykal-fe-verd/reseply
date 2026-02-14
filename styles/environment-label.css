@@ -1,0 +1,56 @@
+.app-environment-label {
+    position: fixed;
+    top: 58px;
+    left: -25px;
+    padding: 5px 0;
+    text-align: center;
+    width: 160px;
+    background-color: #e74c3c;
+    color: white;
+    font-weight: bold;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transform: rotate(-30deg);
+    z-index: 1000;
+    box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.5);
+    transform-origin: 0% 0%;
+    opacity: 0.9;
+    -webkit-transform: rotate(-30deg);
+    -moz-transform: rotate(-30deg);
+    -ms-transform: rotate(-30deg);
+    -o-transform: rotate(-30deg);
+}
+
+/* App Envoronment Label Animation */
+.app-environment-label::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+
+    transform: skewX(-20deg);
+    animation: shine-sweep 3s infinite linear;
+    -webkit-animation: shine-sweep 3s infinite linear;
+}
+
+@keyframes shine-sweep {
+    0% {
+        left: -150%; /* Start the shine off-screen left */
+    }
+    100% {
+        left: 200%; /* End the shine off-screen right */
+    }
+}
+
+@-webkit-keyframes shine-sweep {
+    0% {
+        left: -150%;
+    }
+    100% {
+        left: 200%;
+    }
+}
