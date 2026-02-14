@@ -35,7 +35,8 @@
         "db:migrate": "bunx --bun prisma migrate dev",
         "db:migrate:deploy": "bunx --bun prisma migrate deploy",
         "db:migrate:reset": "bunx --bun prisma migrate reset",
-        "db:format": "bunx --bun prisma format"
+        "db:format": "bunx --bun prisma format",
+        "postinstall": "prisma generate"
     },
     "dependencies": {
         "@ai-sdk/openai": "^3.0.29",
