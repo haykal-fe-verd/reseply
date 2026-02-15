@@ -1,13 +1,15 @@
 "use client";
 
-import { Component, MenuIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Component, LogOut, MenuIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { authClient } from "@/config/auth/auth-client";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV_ITEMS, isActivePath, NAV_ITEMS, USER_NAV_ITEMS } from "./nav-config";
@@ -48,8 +50,20 @@ function NavLink({
 
 export function MobileNav({ open, onOpenChange, session }: MobileNavProps) {
     const pathname = usePathname();
+    const router = useRouter();
+    const queryClient = useQueryClient();
     const onLinkClick = () => onOpenChange(false);
     const isAdmin = session?.user?.role === "admin";
+
+    const handleSignOut = async () => {
+        await authClient.signOut();
+        queryClient.removeQueries({ queryKey: ["favorites"] });
+        queryClient.removeQueries({ queryKey: ["favorite-ids"] });
+        queryClient.removeQueries({ queryKey: ["favorites-count"] });
+        queryClient.removeQueries({ queryKey: ["favorite-categories"] });
+        onOpenChange(false);
+        router.push("/sign-in");
+    };
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -112,7 +126,12 @@ export function MobileNav({ open, onOpenChange, session }: MobileNavProps) {
                         <span className="text-sm text-muted-foreground">Tema</span>
                         <ThemeToggle />
                     </div>
-                    {!session && (
+                    {session ? (
+                        <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                            <LogOut className="size-4" aria-hidden />
+                            Log out
+                        </Button>
+                    ) : (
                         <>
                             <Button variant="outline" className="w-full" asChild>
                                 <Link href="/sign-in">Masuk</Link>
