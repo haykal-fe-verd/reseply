@@ -11,7 +11,7 @@ import { UserTable } from "./user-table";
 
 export function UserPage() {
     return (
-        <div className="container mx-auto space-y-6 py-6">
+        <div className="mx-auto max-w-7xl overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3">
                 <Users className="h-8 w-8" />
                 <div>
