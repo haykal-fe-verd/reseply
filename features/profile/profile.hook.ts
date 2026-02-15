@@ -14,20 +14,22 @@ import {
     twoFactorSchema,
     usePasskey,
     useTwoFactorSettings,
+    verifyTwoFactorTotp,
 } from "@/features/auth";
-import { verifyTwoFactorTotp } from "@/features/auth/auth.service";
-import { formatDate, getInitials } from "@/lib/utils";
-import type { Session } from "./profile.service";
 import {
     deleteAvatar as deleteAvatarService,
     deleteUser as deleteUserService,
+    type Gender,
     listSessions,
     revokeOtherSessions,
     revokeSession,
+    type Session,
     sendVerificationEmail as sendVerificationEmailService,
+    updateProfile as updateProfileService,
     updateUserImage,
     uploadAvatar,
-} from "./profile.service";
+} from "@/features/profile";
+import { formatDate, getInitials } from "@/lib/utils";
 
 // ============================================================================
 // Account Hook
@@ -41,6 +43,10 @@ export interface SessionUser {
     twoFactorEnabled?: boolean;
     emailVerified?: boolean;
     createdAt?: Date | string;
+    dateOfBirth?: Date | string | null;
+    gender?: Gender | null;
+    weight?: number | null;
+    height?: number | null;
 }
 
 export function useAccount() {
@@ -170,6 +176,12 @@ export function useAvatarUpload() {
 
                 await updateUserImage(imageUrl);
 
+                // Force refresh the session cache by disabling cookie cache
+                await authClient.getSession({
+                    query: {
+                        disableCookieCache: true,
+                    },
+                });
                 router.refresh();
 
                 toast.success("Foto profil berhasil diperbarui.");
@@ -187,6 +199,51 @@ export function useAvatarUpload() {
     return {
         uploadAndUpdateAvatar,
         isUploading,
+    };
+}
+
+export function useUpdateProfile() {
+    const router = useRouter();
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const updateProfile = useCallback(
+        async (data: {
+            name: string;
+            dateOfBirth?: Date | null;
+            gender?: Gender | null;
+            weight?: number | null;
+            height?: number | null;
+        }) => {
+            setIsUpdating(true);
+            try {
+                await updateProfileService({
+                    name: data.name,
+                    dateOfBirth: data.dateOfBirth ?? null,
+                    gender: data.gender ?? null,
+                    weight: data.weight ?? null,
+                    height: data.height ?? null,
+                });
+                // Force refresh the session cache by disabling cookie cache
+                await authClient.getSession({
+                    query: {
+                        disableCookieCache: true,
+                    },
+                });
+                router.refresh();
+                toast.success("Profil berhasil diperbarui.");
+            } catch (error) {
+                toast.error(error instanceof Error ? error.message : "Gagal memperbarui profil.");
+                throw error;
+            } finally {
+                setIsUpdating(false);
+            }
+        },
+        [router],
+    );
+
+    return {
+        updateProfile,
+        isUpdating,
     };
 }
 

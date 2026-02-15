@@ -1,4 +1,5 @@
 import { authClient } from "@/config/auth/auth-client";
+import type { UpdateProfileSchema } from "@/features/profile";
 
 export interface Session {
     id: string;
@@ -56,6 +57,21 @@ export async function updateUserImage(imageUrl: string) {
 
     if (error) {
         throw new Error(error.message || "Gagal memperbarui foto profil.");
+    }
+}
+
+export async function updateProfile(data: UpdateProfileSchema) {
+    const { error } = await authClient.updateUser({
+        name: data.name,
+        // @ts-expect-error - Additional fields from better-auth additionalFields config
+        dateOfBirth: data.dateOfBirth || undefined,
+        gender: data.gender || undefined,
+        weight: data.weight || undefined,
+        height: data.height || undefined,
+    });
+
+    if (error) {
+        throw new Error(error.message || "Gagal memperbarui profil.");
     }
 }
 

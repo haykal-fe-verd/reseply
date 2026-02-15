@@ -27,6 +27,24 @@ export const auth = betterAuth({
         deleteUser: {
             enabled: true,
         },
+        additionalFields: {
+            dateOfBirth: {
+                type: "date",
+                required: false,
+            },
+            gender: {
+                type: "string",
+                required: false,
+            },
+            weight: {
+                type: "number",
+                required: false,
+            },
+            height: {
+                type: "number",
+                required: false,
+            },
+        },
     },
     emailAndPassword: {
         enabled: true,

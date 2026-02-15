@@ -7,6 +7,11 @@ datasource db {
     provider = "postgresql"
 }
 
+enum Gender {
+    MALE
+    FEMALE
+}
+
 model User {
     id               String      @id
     name             String
@@ -25,6 +30,11 @@ model User {
     banReason        String?
     banExpires       DateTime?
     favorites        Favorite[]
+    // Profile fields
+    dateOfBirth      DateTime?
+    gender           Gender?
+    weight           Float? // dalam kg
+    height           Float? // dalam cm
 
     @@unique([email])
     @@map("user")
