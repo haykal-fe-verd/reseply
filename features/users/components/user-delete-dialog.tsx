@@ -17,8 +17,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { useDeleteUser } from "../users.hook";
-import type { User } from "../users.service";
+import { type User, useDeleteUser } from "@/features/users";
 
 interface UserDeleteDialogProps {
     open: boolean;

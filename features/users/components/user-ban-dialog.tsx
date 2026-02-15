@@ -21,8 +21,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { useBanUser } from "../users.hook";
-import type { User } from "../users.service";
+import { type User, useBanUser } from "@/features/users";
 
 interface UserBanDialogProps {
     open: boolean;

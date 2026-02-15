@@ -4,7 +4,7 @@
  * @author Muhammad Haykal
  */
 
-import type { BanUserSchema, UpdateUserSchema, UserQuerySchema, UserRole } from "./users.schema";
+import type { BanUserSchema, UpdateUserSchema, UserQuerySchema, UserRole } from "@/features/users";
 
 export interface UserSession {
     id: string;

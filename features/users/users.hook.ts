@@ -8,8 +8,18 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { BanUserSchema, UpdateUserSchema, UserQuerySchema } from "./users.schema";
-import { banUser, deleteUser, getUser, getUsers, terminateUserSessions, unbanUser, updateUser } from "./users.service";
+import {
+    type BanUserSchema,
+    banUser,
+    deleteUser,
+    getUser,
+    getUsers,
+    terminateUserSessions,
+    type UpdateUserSchema,
+    type UserQuerySchema,
+    unbanUser,
+    updateUser,
+} from "@/features/users";
 
 export const USER_QUERY_KEY = "users";
 

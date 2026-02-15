@@ -42,12 +42,16 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useUnbanUser, useUpdateUser, useUsers } from "../users.hook";
-import type { UserRole } from "../users.schema";
-import type { User } from "../users.service";
-import { UserBanDialog } from "./user-ban-dialog";
-import { UserDeleteDialog } from "./user-delete-dialog";
-import { UserSessionsDialog } from "./user-sessions-dialog";
+import {
+    type User,
+    UserBanDialog,
+    UserDeleteDialog,
+    type UserRole,
+    UserSessionsDialog,
+    useUnbanUser,
+    useUpdateUser,
+    useUsers,
+} from "@/features/users";
 
 const ROLE_LABELS: Record<string, string> = {
     user: "Pengguna",

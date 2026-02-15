@@ -21,8 +21,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
-import { useTerminateUserSessions, useUser } from "../users.hook";
-import type { User, UserSession } from "../users.service";
+import { type User, type UserSession, useTerminateUserSessions, useUser } from "@/features/users";
 
 interface UserSessionsDialogProps {
     open: boolean;
