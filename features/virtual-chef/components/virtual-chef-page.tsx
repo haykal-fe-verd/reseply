@@ -17,15 +17,19 @@ import {
     ChefHat,
     Clock,
     Copy,
+    History,
     Lightbulb,
     MessageSquare,
+    Plus,
+    Save,
     Send,
     Sparkles,
     Square,
     UtensilsCrossed,
     Wand2,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -33,8 +37,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/config/auth/auth-client";
+import { type ChatMessage, useConversation, useConversationsCount } from "@/features/virtual-chef";
 import { APP_NAME } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
+
+import { ChatHistorySidebar } from "./chat-history-sidebar";
+import { SaveChatDialog } from "./save-chat-dialog";
 
 // Animation variants
 const containerVariants = {
@@ -134,9 +142,20 @@ export function VirtualChefPage() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [input, setInput] = useState("");
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [showHistorySidebar, setShowHistorySidebar] = useState(false);
+    const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
 
     // Get user session
     const { data: session } = authClient.useSession();
+    const isLoggedIn = !!session?.user;
+
+    // Get conversations count for badge
+    const { data: countData } = useConversationsCount();
+    const conversationsCount = countData?.count ?? 0;
+
+    // Get selected conversation data
+    const { data: conversationData } = useConversation(selectedConversationId);
 
     // Create transport for connecting to API
     const transport = useMemo(
@@ -159,12 +178,28 @@ export function VirtualChefPage() {
         [],
     );
 
-    const { messages, sendMessage, status, stop, error, clearError } = useChat({
+    const { messages, sendMessage, status, stop, error, clearError, setMessages } = useChat({
         transport,
         messages: initialMessages,
     });
 
     const isLoading = status === "streaming" || status === "submitted";
+
+    // Load conversation from history
+    useEffect(() => {
+        if (conversationData?.success && conversationData.data) {
+            const { messages: savedMessages } = conversationData.data;
+
+            // Convert saved messages to UIMessage format
+            const uiMessages: UIMessage[] = savedMessages.map((msg: ChatMessage) => ({
+                id: msg.id,
+                role: msg.role as "user" | "assistant",
+                parts: [{ type: "text", text: msg.content }],
+            }));
+
+            setMessages(uiMessages);
+        }
+    }, [conversationData, setMessages]);
 
     // Auto-scroll to bottom when new messages arrive
     // biome-ignore lint/correctness/useExhaustiveDependencies: messages content changes trigger scroll
@@ -207,6 +242,43 @@ export function VirtualChefPage() {
             handleSubmit(e);
         }
     };
+
+    // Handle new chat
+    const handleNewChat = useCallback(() => {
+        setSelectedConversationId(null);
+        setMessages(initialMessages);
+        toast.success("Percakapan baru dimulai");
+    }, [setMessages, initialMessages]);
+
+    // Handle select conversation
+    const handleSelectConversation = useCallback((conversationId: string) => {
+        setSelectedConversationId(conversationId);
+        // Messages will be loaded via useEffect when conversationData changes
+    }, []);
+
+    // Handle save success
+    const handleSaveSuccess = useCallback(() => {
+        setShowSaveDialog(false);
+    }, []);
+
+    // Get messages for saving (excluding welcome message)
+    const messagesToSave = useMemo(() => {
+        return messages
+            .filter((msg) => msg.id !== "welcome")
+            .map((msg) => ({
+                role: msg.role as "user" | "assistant",
+                content: getMessageText(msg),
+            }));
+    }, [messages]);
+
+    // Check if can save (must have at least 2 messages: 1 user + 1 assistant)
+    const canSave = messagesToSave.length >= 2 && !isLoading;
+
+    // Get first user message for default title
+    const defaultTitle = useMemo(() => {
+        const firstUserMsg = messagesToSave.find((m) => m.role === "user");
+        return firstUserMsg?.content.slice(0, 50) ?? "Percakapan Baru";
+    }, [messagesToSave]);
 
     return (
         <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-background">
@@ -300,20 +372,66 @@ export function VirtualChefPage() {
                             <div className="pointer-events-none absolute inset-0 rounded-xl bg-linear-to-r from-primary/20 via-transparent to-primary/20 opacity-50" />
 
                             {/* Chat Header */}
-                            <div className="relative border-b bg-muted/30 px-6 py-4">
-                                <div className="flex items-center gap-4">
-                                    <motion.div className="relative" variants={floatingVariants} animate="animate">
-                                        <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
-                                            <Bot className="size-6 text-primary" />
+                            <div className="relative border-b bg-muted/30 px-4 sm:px-6 py-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <motion.div className="relative" variants={floatingVariants} animate="animate">
+                                            <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                                                <Bot className="size-6 text-primary" />
+                                            </div>
+                                            <span className="absolute -bottom-0.5 -right-0.5 flex size-3">
+                                                <span className="absolute inline-flex size-full animate-ping rounded-full bg-green-400 opacity-75" />
+                                                <span className="relative inline-flex size-3 rounded-full bg-green-500" />
+                                            </span>
+                                        </motion.div>
+                                        <div>
+                                            <h3 className="font-semibold text-foreground">Virtual Chef AI</h3>
+                                            <p className="text-sm text-muted-foreground">Selalu siap membantu</p>
                                         </div>
-                                        <span className="absolute -bottom-0.5 -right-0.5 flex size-3">
-                                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-green-400 opacity-75" />
-                                            <span className="relative inline-flex size-3 rounded-full bg-green-500" />
-                                        </span>
-                                    </motion.div>
-                                    <div>
-                                        <h3 className="font-semibold text-foreground">Virtual Chef AI</h3>
-                                        <p className="text-sm text-muted-foreground">Selalu siap membantu</p>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex items-center gap-2">
+                                        {/* Save Button */}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="gap-2"
+                                            onClick={() => setShowSaveDialog(true)}
+                                            disabled={!canSave}
+                                            title={isLoggedIn ? "Simpan percakapan" : "Masuk untuk menyimpan"}>
+                                            <Save className="size-4" />
+                                            <span className="hidden sm:inline">Simpan</span>
+                                        </Button>
+
+                                        {/* History Button */}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="relative gap-2"
+                                            onClick={() => setShowHistorySidebar(true)}>
+                                            <History className="size-4" />
+                                            <span className="hidden sm:inline">Riwayat</span>
+                                            {conversationsCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                                                    {conversationsCount > 99 ? "99+" : conversationsCount}
+                                                </span>
+                                            )}
+                                        </Button>
+
+                                        {/* New Chat Button */}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="gap-2"
+                                            onClick={handleNewChat}
+                                            title="Mulai percakapan baru">
+                                            <Plus className="size-4" />
+                                            <span className="hidden sm:inline">Baru</span>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -648,6 +766,23 @@ export function VirtualChefPage() {
                     </motion.div>
                 </div>
             </section>
+
+            {/* Chat History Sidebar */}
+            <ChatHistorySidebar
+                open={showHistorySidebar}
+                onOpenChange={setShowHistorySidebar}
+                onSelectConversation={handleSelectConversation}
+                selectedConversationId={selectedConversationId}
+            />
+
+            {/* Save Chat Dialog */}
+            <SaveChatDialog
+                open={showSaveDialog}
+                onOpenChange={setShowSaveDialog}
+                messages={messagesToSave}
+                defaultTitle={defaultTitle}
+                onSuccess={handleSaveSuccess}
+            />
         </div>
     );
 }

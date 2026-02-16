@@ -30,6 +30,7 @@ model User {
     banReason        String?
     banExpires       DateTime?
     favorites        Favorite[]
+    conversations    VirtualChefConversation[]
     // Profile fields
     dateOfBirth      DateTime?
     gender           Gender?
@@ -203,4 +204,36 @@ model RecipeCategory {
     @@id([recipeId, categoryId])
     @@index([categoryId])
     @@map("recipe_category")
+}
+
+//! VIRTUAL CHEF CHAT
+
+model VirtualChefConversation {
+    id        String                @id @default(cuid())
+    title     String
+    userId    String
+    user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    messages  VirtualChefMessage[]
+    createdAt DateTime              @default(now())
+    updatedAt DateTime              @updatedAt
+
+    @@index([userId])
+    @@map("virtual_chef_conversation")
+}
+
+model VirtualChefMessage {
+    id             String                   @id @default(cuid())
+    conversationId String
+    conversation   VirtualChefConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    role           VirtualChefMessageRole
+    content        String
+    createdAt      DateTime                 @default(now())
+
+    @@index([conversationId])
+    @@map("virtual_chef_message")
+}
+
+enum VirtualChefMessageRole {
+    USER
+    ASSISTANT
 }

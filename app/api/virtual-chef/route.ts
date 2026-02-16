@@ -104,7 +104,59 @@ export async function POST(request: Request) {
             abortSignal: request.signal,
         });
 
-        return result.toTextStreamResponse();
+        const streamResponse = result.toTextStreamResponse();
+
+        // Wrap stream agar error saat client putus (ECONNRESET/abort) tidak jadi 500
+        const body = streamResponse.body;
+        if (!body) {
+            return streamResponse;
+        }
+
+        const wrappedStream = new ReadableStream({
+            async start(controller) {
+                const reader = body.getReader();
+                try {
+                    // eslint-disable-next-line no-constant-condition
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        controller.enqueue(value);
+                    }
+                    controller.close();
+                } catch (err) {
+                    const code = err instanceof Error && "code" in err ? (err as NodeJS.ErrnoException).code : null;
+                    if (
+                        code === "ECONNRESET" ||
+                        code === "EPIPE" ||
+                        code === "ECONNREFUSED" ||
+                        request.signal?.aborted ||
+                        (err instanceof Error && (err.name === "AbortError" || err.message?.includes("terminated")))
+                    ) {
+                        // Client putus, request di-abort, atau upstream putus — tutup stream dengan bersih
+                        try {
+                            controller.close();
+                        } catch {
+                            // ignore
+                        }
+                        return;
+                    }
+                    console.error("Virtual Chef stream error:", err);
+                    try {
+                        controller.error(err);
+                    } catch {
+                        controller.close();
+                    }
+                }
+            },
+            cancel() {
+                // Saat client cancel (navigasi/refresh), stream di-cancel — tidak perlu throw
+            },
+        });
+
+        return new Response(wrappedStream, {
+            status: streamResponse.status,
+            headers: streamResponse.headers,
+        });
     } catch (error) {
         if (request.signal?.aborted) {
             return new Response(null, { status: 499 });
