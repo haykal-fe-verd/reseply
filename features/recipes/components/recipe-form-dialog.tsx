@@ -58,6 +58,9 @@ export function RecipeFormDialog({ open, onOpenChange, recipe }: RecipeFormDialo
     const [ingredientKeys, setIngredientKeys] = React.useState<string[]>([]);
     const [instructionKeys, setInstructionKeys] = React.useState<string[]>([]);
 
+    // Track which recipe we last loaded so we don't wipe form when modal is closed and reopened
+    const lastLoadedRecipeIdRef = React.useRef<string | null>(null);
+
     const form = useForm({
         defaultValues: {
             title: recipe?.title ?? "",
@@ -102,30 +105,36 @@ export function RecipeFormDialog({ open, onOpenChange, recipe }: RecipeFormDialo
                 }
                 onOpenChange(false);
                 form.reset();
+                lastLoadedRecipeIdRef.current = null;
             } catch {
                 // Error handled by mutation
             }
         },
     });
 
-    // Reset form when dialog opens/closes or recipe changes
+    // Hanya isi form saat dialog BUKA jika: (1) edit resep lain / pertama kali buka edit, atau (2) tambah baru tapi sebelumnya buka edit (kosongkan draft)
+    // Jangan reset saat modal cuma ditutup lalu dibuka lagi — data tetap ada
     React.useEffect(() => {
-        if (open) {
-            // For editing, wait until full recipe data is loaded
-            if (isEditing && !fullRecipe) return;
+        if (!open) return;
 
-            const recipeData = fullRecipe ?? recipe;
+        if (isEditing && recipe) {
+            // Buka mode edit: load data resep hanya kalau ini resep yang beda dari terakhir kita load
+            if (recipe.id === lastLoadedRecipeIdRef.current) return; // same recipe, keep current form (draft)
+            // Untuk edit, tunggu full recipe data
+            if (!fullRecipe) return;
 
-            form.reset();
-            form.setFieldValue("title", recipeData?.title ?? "");
-            form.setFieldValue("description", recipeData?.description ?? "");
-            form.setFieldValue("imageUrl", recipeData?.imageUrl ?? "");
-            form.setFieldValue("prepMinutes", recipeData?.prepMinutes ?? null);
-            form.setFieldValue("cookMinutes", recipeData?.cookMinutes ?? null);
-            form.setFieldValue("servings", recipeData?.servings ?? null);
+            const recipeData = fullRecipe;
+            lastLoadedRecipeIdRef.current = recipe.id;
+
+            form.setFieldValue("title", recipeData.title ?? "");
+            form.setFieldValue("description", recipeData.description ?? "");
+            form.setFieldValue("imageUrl", recipeData.imageUrl ?? "");
+            form.setFieldValue("prepMinutes", recipeData.prepMinutes ?? null);
+            form.setFieldValue("cookMinutes", recipeData.cookMinutes ?? null);
+            form.setFieldValue("servings", recipeData.servings ?? null);
 
             const ingredients =
-                recipeData?.ingredients?.map((ing) => ({
+                recipeData.ingredients?.map((ing) => ({
                     name: ing.name,
                     amount: ing.amount ?? "",
                     unit: ing.unit ?? "",
@@ -134,20 +143,39 @@ export function RecipeFormDialog({ open, onOpenChange, recipe }: RecipeFormDialo
             form.setFieldValue("ingredients", ingredients);
 
             const instructions =
-                recipeData?.instructions?.map((inst) => ({
+                recipeData.instructions?.map((inst) => ({
                     stepNumber: inst.stepNumber,
                     content: inst.content,
                 })) ?? [];
             form.setFieldValue("instructions", instructions);
 
-            form.setFieldValue("categoryIds", recipeData?.categories?.map((c) => c.categoryId) ?? []);
+            form.setFieldValue("categoryIds", recipeData.categories?.map((c) => c.categoryId) ?? []);
 
-            // Reset keys
             ingredientKeyRef.current = ingredients.length;
             instructionKeyRef.current = instructions.length;
             setIngredientKeys(ingredients.map((_, i) => `ing-init-${i}`));
             setInstructionKeys(instructions.map((_, i) => `inst-init-${i}`));
+            return;
         }
+
+        // Mode tambah: kalau sebelumnya buka edit (lastLoaded ada), kosongkan form untuk mulai draft baru
+        if (lastLoadedRecipeIdRef.current !== null) {
+            lastLoadedRecipeIdRef.current = null;
+            form.setFieldValue("title", "");
+            form.setFieldValue("description", "");
+            form.setFieldValue("imageUrl", "");
+            form.setFieldValue("prepMinutes", null);
+            form.setFieldValue("cookMinutes", null);
+            form.setFieldValue("servings", null);
+            form.setFieldValue("ingredients", []);
+            form.setFieldValue("instructions", []);
+            form.setFieldValue("categoryIds", []);
+            ingredientKeyRef.current = 0;
+            instructionKeyRef.current = 0;
+            setIngredientKeys([]);
+            setInstructionKeys([]);
+        }
+        // Kalau lastLoadedRecipeIdRef sudah null (misal baru saja tutup modal tambah tanpa submit), form tidak diubah — draft tetap
     }, [open, recipe, fullRecipe, isEditing, form]);
 
     const isPending = createMutation.isPending || updateMutation.isPending;
