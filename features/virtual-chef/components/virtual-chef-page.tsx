@@ -29,6 +29,8 @@ import {
     Wand2,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -495,25 +497,72 @@ export function VirtualChefPage() {
                                                                 ? "bg-muted/50"
                                                                 : "bg-primary text-primary-foreground"
                                                         }`}>
-                                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                                            {getMessageText(message)}
-                                                            {/* Typewriter cursor animation */}
-                                                            {message.role === "assistant" &&
-                                                                status === "streaming" &&
-                                                                message.id === messages[messages.length - 1]?.id && (
-                                                                    <motion.span
-                                                                        className="ml-0.5 inline-block h-5 w-0.5 translate-y-0.5 bg-primary"
-                                                                        animate={{
-                                                                            opacity: [1, 0],
-                                                                        }}
-                                                                        transition={{
-                                                                            duration: 0.5,
-                                                                            repeat: Number.POSITIVE_INFINITY,
-                                                                            repeatType: "reverse",
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                        </p>
+                                                        {message.role === "assistant" ? (
+                                                            <div className="virtual-chef-markdown text-sm leading-relaxed">
+                                                                <ReactMarkdown
+                                                                    remarkPlugins={[remarkGfm]}
+                                                                    components={{
+                                                                        p: ({ children }) => (
+                                                                            <p className="mb-2 last:mb-0">{children}</p>
+                                                                        ),
+                                                                        strong: ({ children }) => (
+                                                                            <strong className="font-bold">{children}</strong>
+                                                                        ),
+                                                                        em: ({ children }) => (
+                                                                            <em className="italic">{children}</em>
+                                                                        ),
+                                                                        ul: ({ children }) => (
+                                                                            <ul className="my-2 list-disc pl-4">{children}</ul>
+                                                                        ),
+                                                                        ol: ({ children }) => (
+                                                                            <ol className="my-2 list-decimal pl-4">{children}</ol>
+                                                                        ),
+                                                                        li: ({ children }) => (
+                                                                            <li className="my-0.5">{children}</li>
+                                                                        ),
+                                                                        code: ({ children }) => (
+                                                                            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                                                                                {children}
+                                                                            </code>
+                                                                        ),
+                                                                        pre: ({ children }) => (
+                                                                            <pre className="my-2 overflow-x-auto rounded-lg bg-muted p-3 text-xs">
+                                                                                {children}
+                                                                            </pre>
+                                                                        ),
+                                                                        h1: ({ children }) => (
+                                                                            <h1 className="mb-1 mt-2 text-base font-bold">{children}</h1>
+                                                                        ),
+                                                                        h2: ({ children }) => (
+                                                                            <h2 className="mb-1 mt-2 text-sm font-bold">{children}</h2>
+                                                                        ),
+                                                                        h3: ({ children }) => (
+                                                                            <h3 className="mb-1 mt-2 text-sm font-semibold">{children}</h3>
+                                                                        ),
+                                                                    }}>
+                                                                    {getMessageText(message)}
+                                                                </ReactMarkdown>
+                                                                {/* Typewriter cursor animation */}
+                                                                {status === "streaming" &&
+                                                                    message.id === messages[messages.length - 1]?.id && (
+                                                                        <motion.span
+                                                                            className="ml-0.5 inline-block h-5 w-0.5 translate-y-0.5 bg-primary"
+                                                                            animate={{
+                                                                                opacity: [1, 0],
+                                                                            }}
+                                                                            transition={{
+                                                                                duration: 0.5,
+                                                                                repeat: Number.POSITIVE_INFINITY,
+                                                                                repeatType: "reverse",
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                                                                {getMessageText(message)}
+                                                            </p>
+                                                        )}
                                                     </div>
 
                                                     {/* Copy Button - only for assistant messages */}
