@@ -92,15 +92,15 @@ export function AboutPage() {
     return (
         <div className="flex flex-col">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-linear-to-b from-primary/5 via-background to-background py-20 sm:py-28 lg:py-32">
+            <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <motion.div
-                        className="absolute -top-20 -right-20 size-96 rounded-full bg-primary/5 blur-3xl"
+                        className="absolute -top-20 -right-20 size-96 rounded-full blur-3xl"
                         animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
                         transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
                     />
                     <motion.div
-                        className="absolute -bottom-20 -left-20 size-96 rounded-full bg-secondary/10 blur-3xl"
+                        className="absolute -bottom-20 -left-20 size-96 rounded-full blur-3xl"
                         animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
                         transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, delay: 2 }}
                     />

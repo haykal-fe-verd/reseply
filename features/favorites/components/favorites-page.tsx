@@ -218,7 +218,7 @@ export function FavoritesPage() {
     return (
         <div className="min-h-screen bg-background">
             {/* Hero Section */}
-            <section className="bg-linear-to-br from-red-500/10 via-background to-background py-12 sm:py-16">
+            <section className="py-12 sm:py-16">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -229,7 +229,7 @@ export function FavoritesPage() {
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                            className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-red-500/10">
+                            className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
                             <Heart className="size-8 text-red-500" />
                         </motion.div>
                         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">

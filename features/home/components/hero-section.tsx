@@ -65,12 +65,12 @@ export function HeroSection() {
             {/* Decorative Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
-                    className="absolute -top-20 -right-20 size-96 rounded-full bg-primary/5 blur-3xl"
+                    className="absolute -top-20 -right-20 size-96 rounded-full blur-3xl"
                     animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
                     transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
                 />
                 <motion.div
-                    className="absolute -bottom-20 -left-20 size-96 rounded-full bg-secondary/10 blur-3xl"
+                    className="absolute -bottom-20 -left-20 size-96 rounded-full blur-3xl"
                     animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
                     transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, delay: 2 }}
                 />

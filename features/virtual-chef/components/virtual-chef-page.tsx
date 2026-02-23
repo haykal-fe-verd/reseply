@@ -283,16 +283,16 @@ export function VirtualChefPage() {
     return (
         <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-background">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-background pb-8 pt-16 sm:pb-12 sm:pt-20 lg:pt-24">
+            <section className="relative overflow-hidden pb-8 pt-16 sm:pb-12 sm:pt-20 lg:pt-24">
                 {/* Background Decorations */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <motion.div
-                        className="absolute -right-20 -top-20 size-96 rounded-full bg-primary/5 blur-3xl"
+                        className="absolute -right-20 -top-20 size-96 rounded-full blur-3xl"
                         animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
                         transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
                     />
                     <motion.div
-                        className="absolute -bottom-20 -left-20 size-96 rounded-full bg-secondary/10 blur-3xl"
+                        className="absolute -bottom-20 -left-20 size-96 rounded-full blur-3xl"
                         animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
                         transition={{
                             duration: 8,
@@ -301,7 +301,7 @@ export function VirtualChefPage() {
                         }}
                     />
                     <motion.div
-                        className="absolute right-1/4 top-1/2 size-64 rounded-full bg-purple-500/5 blur-3xl"
+                        className="absolute right-1/4 top-1/2 size-64 rounded-full blur-3xl"
                         animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
                         transition={{
                             duration: 6,
