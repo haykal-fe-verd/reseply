@@ -14,7 +14,7 @@ import {
     type SortingState,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Clock, Eye, ImageIcon, MoreHorizontal, Pencil, Plus, Search, Trash2, Users } from "lucide-react";
+import { ArrowUpDown, Clock, Download, Eye, FileSpreadsheet, ImageIcon, MoreHorizontal, Pencil, Plus, Search, Trash2, Users } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
@@ -32,7 +32,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCategories } from "@/features/category";
-import { type Recipe, RecipeDeleteDialog, RecipeFormDialog, RecipePreviewDialog, useRecipes } from "@/features/recipes";
+import {
+    type Recipe,
+    RECIPE_BULK_IMPORT_TEMPLATE_PATH,
+    RecipeBulkImportDialog,
+    RecipeDeleteDialog,
+    RecipeFormDialog,
+    RecipePreviewDialog,
+    useRecipes,
+} from "@/features/recipes";
 
 // Default values
 const DEFAULT_PAGE = 1;
@@ -49,6 +57,7 @@ export function RecipeTable() {
     const [formDialogOpen, setFormDialogOpen] = React.useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [previewDialogOpen, setPreviewDialogOpen] = React.useState(false);
+    const [bulkImportDialogOpen, setBulkImportDialogOpen] = React.useState(false);
     const [selectedRecipe, setSelectedRecipe] = React.useState<Recipe | null>(null);
 
     // State for table
@@ -374,10 +383,27 @@ export function RecipeTable() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Button onClick={handleCreate} className="w-full sm:w-auto">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Tambah Resep
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                    <a
+                        href={RECIPE_BULK_IMPORT_TEMPLATE_PATH}
+                        download
+                        className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                        <Download className="h-4 w-4" />
+                        Template Excel
+                    </a>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                        onClick={() => setBulkImportDialogOpen(true)}>
+                        <FileSpreadsheet className="mr-2 h-4 w-4" />
+                        Import Excel
+                    </Button>
+                    <Button onClick={handleCreate} className="w-full sm:w-auto">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Tambah Resep
+                    </Button>
+                </div>
             </div>
 
             {/* Table */}
@@ -503,6 +529,7 @@ export function RecipeTable() {
             <RecipeFormDialog open={formDialogOpen} onOpenChange={setFormDialogOpen} recipe={selectedRecipe} />
             <RecipeDeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} recipe={selectedRecipe} />
             <RecipePreviewDialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen} recipe={selectedRecipe} />
+            <RecipeBulkImportDialog open={bulkImportDialogOpen} onOpenChange={setBulkImportDialogOpen} />
         </div>
     );
 }

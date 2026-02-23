@@ -170,3 +170,37 @@ export async function deleteRecipe(id: string): Promise<{ success: boolean; mess
 
     return data as { success: boolean; message: string };
 }
+
+/** Path to Excel template for bulk import (file in public folder) */
+export const RECIPE_BULK_IMPORT_TEMPLATE_PATH = "/templates/template-resep.xlsx";
+
+export interface BulkImportRecipesResponse {
+    success: boolean;
+    message: string;
+    created: number;
+    errors: number;
+    details?: {
+        created: string[];
+        errors: { row: number; message: string }[];
+    };
+}
+
+/**
+ * Bulk import recipes from Excel file
+ */
+export async function bulkImportRecipes(file: File): Promise<BulkImportRecipesResponse> {
+    const formData = new FormData();
+    formData.set("file", file);
+
+    const response = await fetch("/api/recipes/bulk-import", {
+        method: "POST",
+        body: formData,
+    });
+    const data = (await response.json()) as BulkImportRecipesResponse | ApiError;
+
+    if (!response.ok) {
+        throw new Error((data as ApiError).message || "Gagal mengimpor file.");
+    }
+
+    return data as BulkImportRecipesResponse;
+}

@@ -10,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
     type CreateRecipeSchema,
+    bulkImportRecipes,
     createRecipe,
     deleteRecipe,
     getRecipe,
@@ -92,6 +93,24 @@ export function useDeleteRecipe() {
         },
         onError: (error: Error) => {
             toast.error(error.message || "Gagal menghapus resep.");
+        },
+    });
+}
+
+/**
+ * Hook to bulk import recipes from Excel
+ */
+export function useBulkImportRecipes() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (file: File) => bulkImportRecipes(file),
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: [RECIPE_QUERY_KEY] });
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || "Gagal mengimpor resep.");
         },
     });
 }
