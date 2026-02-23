@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import {
     type CategoryQuerySchema,
     type CreateCategorySchema,
+    bulkImportCategories,
     createCategory,
     deleteCategory,
     getCategories,
@@ -92,6 +93,24 @@ export function useDeleteCategory() {
         },
         onError: (error: Error) => {
             toast.error(error.message || "Gagal menghapus kategori.");
+        },
+    });
+}
+
+/**
+ * Hook to bulk import categories from Excel
+ */
+export function useBulkImportCategories() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (file: File) => bulkImportCategories(file),
+        onSuccess: (data) => {
+            toast.success(data.message);
+            queryClient.invalidateQueries({ queryKey: [CATEGORY_QUERY_KEY] });
+        },
+        onError: (error: Error) => {
+            toast.error(error.message || "Gagal mengimpor kategori.");
         },
     });
 }

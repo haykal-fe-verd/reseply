@@ -14,7 +14,7 @@ import {
     type SortingState,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ArrowUpDown, Download, FileSpreadsheet, MoreHorizontal, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
     type Category,
+    CATEGORY_BULK_IMPORT_TEMPLATE_PATH,
+    CategoryBulkImportDialog,
     CategoryDeleteDialog,
     CategoryFormDialog,
     type CategoryType,
@@ -64,6 +66,7 @@ export function CategoryTable() {
     // State for dialogs
     const [formDialogOpen, setFormDialogOpen] = React.useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+    const [bulkImportDialogOpen, setBulkImportDialogOpen] = React.useState(false);
     const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
 
     // State for table
@@ -299,10 +302,27 @@ export function CategoryTable() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Button onClick={handleCreate} className="w-full sm:w-auto">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Tambah Kategori
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                    <a
+                        href={CATEGORY_BULK_IMPORT_TEMPLATE_PATH}
+                        download
+                        className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                        <Download className="h-4 w-4" />
+                        Template Excel
+                    </a>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full sm:w-auto"
+                        onClick={() => setBulkImportDialogOpen(true)}>
+                        <FileSpreadsheet className="mr-2 h-4 w-4" />
+                        Import Excel
+                    </Button>
+                    <Button onClick={handleCreate} className="w-full sm:w-auto">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Tambah Kategori
+                    </Button>
+                </div>
             </div>
 
             {/* Table */}
@@ -425,6 +445,7 @@ export function CategoryTable() {
                 onOpenChange={setDeleteDialogOpen}
                 category={selectedCategory}
             />
+            <CategoryBulkImportDialog open={bulkImportDialogOpen} onOpenChange={setBulkImportDialogOpen} />
         </div>
     );
 }

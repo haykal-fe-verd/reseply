@@ -134,3 +134,39 @@ export async function deleteCategory(id: string): Promise<{ success: boolean; me
 
     return data as { success: boolean; message: string };
 }
+
+/** Path to Excel template for bulk import (file should be in public folder) */
+export const CATEGORY_BULK_IMPORT_TEMPLATE_PATH = "/templates/template-kategori.xlsx";
+
+export interface BulkImportResponse {
+    success: boolean;
+    message: string;
+    created: number;
+    skipped: number;
+    errors: number;
+    details?: {
+        created: string[];
+        skipped: string[];
+        errors: { row: number; message: string }[];
+    };
+}
+
+/**
+ * Bulk import categories from Excel file
+ */
+export async function bulkImportCategories(file: File): Promise<BulkImportResponse> {
+    const formData = new FormData();
+    formData.set("file", file);
+
+    const response = await fetch("/api/categories/bulk-import", {
+        method: "POST",
+        body: formData,
+    });
+    const data = (await response.json()) as BulkImportResponse | ApiError;
+
+    if (!response.ok) {
+        throw new Error((data as ApiError).message || "Gagal mengimpor file.");
+    }
+
+    return data as BulkImportResponse;
+}
