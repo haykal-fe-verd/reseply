@@ -7,7 +7,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock, Timer, Users } from "lucide-react";
+import { Clock, ThumbsUp, Timer, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -93,7 +93,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
                     {/* Footer */}
                     <CardFooter className="mt-auto border-t border-border/50 px-4 py-3">
-                        <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
+                        <div className="flex w-full flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                             {/* Time Info */}
                             <div className="flex items-center gap-3">
                                 {recipe.prepMinutes !== null && recipe.prepMinutes > 0 && (
@@ -111,13 +111,19 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                                 {totalTime === 0 && <span className="text-muted-foreground/60">-</span>}
                             </div>
 
-                            {/* Servings */}
-                            {recipe.servings !== null && recipe.servings > 0 && (
+                            {/* Suka & Servings */}
+                            <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1">
-                                    <Users className="size-3.5" />
-                                    <span>{recipe.servings} porsi</span>
+                                    <ThumbsUp className="size-3.5 text-primary/80" />
+                                    <span>{recipe.likeCount > 0 ? recipe.likeCount.toLocaleString() : "0"}</span>
                                 </div>
-                            )}
+                                {recipe.servings !== null && recipe.servings > 0 && (
+                                    <div className="flex items-center gap-1">
+                                        <Users className="size-3.5" />
+                                        <span>{recipe.servings} porsi</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </CardFooter>
                 </Link>

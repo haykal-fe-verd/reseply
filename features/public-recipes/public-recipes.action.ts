@@ -20,6 +20,7 @@ export interface PublicRecipe {
     prepMinutes: number | null;
     cookMinutes: number | null;
     servings: number | null;
+    likeCount: number;
     createdAt: Date;
     categories: {
         id: string;
@@ -126,6 +127,9 @@ export async function getPublicRecipes(params: PublicRecipesParams = {}): Promis
                 cookMinutes: true,
                 servings: true,
                 createdAt: true,
+                _count: {
+                    select: { likes: true },
+                },
                 categories: {
                     select: {
                         category: {
@@ -150,7 +154,16 @@ export async function getPublicRecipes(params: PublicRecipesParams = {}): Promis
 
         // Transform data
         const transformedData: PublicRecipe[] = data.map((recipe) => ({
-            ...recipe,
+            id: recipe.id,
+            title: recipe.title,
+            slug: recipe.slug,
+            description: recipe.description,
+            imageUrl: recipe.imageUrl,
+            prepMinutes: recipe.prepMinutes,
+            cookMinutes: recipe.cookMinutes,
+            servings: recipe.servings,
+            likeCount: recipe._count.likes,
+            createdAt: recipe.createdAt,
             categories: recipe.categories.map((rc) => rc.category),
         }));
 
@@ -362,6 +375,9 @@ export async function getRecommendedRecipes(
                 cookMinutes: true,
                 servings: true,
                 createdAt: true,
+                _count: {
+                    select: { likes: true },
+                },
                 categories: {
                     select: {
                         category: {
@@ -378,7 +394,16 @@ export async function getRecommendedRecipes(
         });
 
         const transformedData: PublicRecipe[] = recipes.map((recipe) => ({
-            ...recipe,
+            id: recipe.id,
+            title: recipe.title,
+            slug: recipe.slug,
+            description: recipe.description,
+            imageUrl: recipe.imageUrl,
+            prepMinutes: recipe.prepMinutes,
+            cookMinutes: recipe.cookMinutes,
+            servings: recipe.servings,
+            likeCount: recipe._count.likes,
+            createdAt: recipe.createdAt,
             categories: recipe.categories.map((rc) => rc.category),
         }));
 

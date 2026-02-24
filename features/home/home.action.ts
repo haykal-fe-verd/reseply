@@ -17,6 +17,7 @@ export interface FeaturedRecipe {
     prepMinutes: number | null;
     cookMinutes: number | null;
     servings: number | null;
+    likeCount: number;
     category: string | null;
 }
 
@@ -26,14 +27,14 @@ export interface FeaturedRecipesResponse {
 }
 
 /**
- * Get featured recipes for homepage (no auth required)
+ * Get featured/popular recipes for homepage (most liked first, no auth required)
  */
 export async function getFeaturedRecipes(limit = 6): Promise<FeaturedRecipesResponse> {
     try {
         const recipes = await prisma.recipe.findMany({
             take: limit,
             orderBy: {
-                createdAt: "desc",
+                likes: { _count: "desc" },
             },
             select: {
                 id: true,
@@ -44,6 +45,9 @@ export async function getFeaturedRecipes(limit = 6): Promise<FeaturedRecipesResp
                 prepMinutes: true,
                 cookMinutes: true,
                 servings: true,
+                _count: {
+                    select: { likes: true },
+                },
                 categories: {
                     take: 1,
                     select: {
@@ -66,6 +70,7 @@ export async function getFeaturedRecipes(limit = 6): Promise<FeaturedRecipesResp
             prepMinutes: recipe.prepMinutes,
             cookMinutes: recipe.cookMinutes,
             servings: recipe.servings,
+            likeCount: recipe._count.likes,
             category: recipe.categories[0]?.category.name ?? null,
         }));
 

@@ -30,6 +30,8 @@ model User {
     banReason        String?
     banExpires       DateTime?
     favorites        Favorite[]
+    recipeLikes      RecipeLike[]
+    recipeComments   RecipeComment[]
     conversations    VirtualChefConversation[]
     // Profile fields
     dateOfBirth      DateTime?
@@ -152,6 +154,8 @@ model Recipe {
     instructions RecipeInstruction[]
     categories   RecipeCategory[]
     favorites    Favorite[]
+    likes        RecipeLike[]
+    comments     RecipeComment[]
 
     @@index([slug])
     @@map("recipe")
@@ -204,6 +208,35 @@ model RecipeCategory {
     @@id([recipeId, categoryId])
     @@index([categoryId])
     @@map("recipe_category")
+}
+
+model RecipeLike {
+    id        String   @id @default(cuid())
+    userId    String
+    recipeId  String
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, recipeId])
+    @@index([userId])
+    @@index([recipeId])
+    @@map("recipe_like")
+}
+
+model RecipeComment {
+    id        String   @id @default(cuid())
+    recipeId  String
+    userId    String
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+    @@index([recipeId])
+    @@index([userId])
+    @@map("recipe_comment")
 }
 
 //! VIRTUAL CHEF CHAT

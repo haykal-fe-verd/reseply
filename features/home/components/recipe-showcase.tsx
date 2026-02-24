@@ -8,7 +8,7 @@
 
 import Autoplay from "embla-carousel-autoplay";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Flame, Users } from "lucide-react";
+import { ArrowRight, Clock, Flame, ThumbsUp, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
@@ -47,7 +47,11 @@ function RecipeCardSkeleton() {
             <CardContent className="p-5">
                 <Skeleton className="mb-2 h-6 w-3/4" />
                 <Skeleton className="mb-4 h-4 w-full" />
-                <Skeleton className="h-4 w-1/2" />
+                <div className="flex gap-4">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-14" />
+                </div>
             </CardContent>
         </Card>
     );
@@ -162,7 +166,11 @@ export function RecipeShowcase() {
                                                         </p>
 
                                                         {/* Meta Info */}
-                                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                                                            <div className="flex items-center gap-1">
+                                                                <ThumbsUp className="size-3.5 text-primary/80" />
+                                                                <span>{recipe.likeCount > 0 ? recipe.likeCount.toLocaleString() : "0"} suka</span>
+                                                            </div>
                                                             <div className="flex items-center gap-1">
                                                                 <Clock className="size-3.5" />
                                                                 <span>

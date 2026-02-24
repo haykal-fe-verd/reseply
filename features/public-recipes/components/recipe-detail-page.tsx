@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FavoriteButton } from "@/features/favorites";
+import { CommentSection, LikeButton } from "@/features/recipe-engagement";
 import {
     PrintRecipeDialog,
     RecipeCard,
@@ -182,6 +183,7 @@ export function RecipeDetailPage({ slug }: RecipeDetailPageProps) {
                                 <Separator className="my-6" />
                                 <div className="flex flex-wrap gap-3">
                                     <FavoriteButton recipeId={recipe.id} variant="outline" size="sm" showLabel />
+                                    <LikeButton recipeId={recipe.id} variant="outline" size="sm" showCount />
                                     <CalorieCheckerDialog
                                         ingredients={recipe.ingredients}
                                         servings={recipe.servings}
@@ -293,6 +295,11 @@ export function RecipeDetailPage({ slug }: RecipeDetailPageProps) {
                             </Card>
                         </motion.div>
                     </div>
+
+                    {/* Comments */}
+                    <motion.div {...fadeInUp} transition={{ delay: 0.25 }} className="mt-10">
+                        <CommentSection recipeId={recipe.id} />
+                    </motion.div>
                 </div>
             </section>
 
@@ -397,11 +404,13 @@ function RecipeDetailSkeleton() {
 
                             <Separator className="my-6" />
 
-                            {/* Actions */}
-                            <div className="flex gap-3">
+                            {/* Actions: Simpan, Like, Cek Kalori, Bagikan, Cetak */}
+                            <div className="flex flex-wrap gap-3">
+                                <Skeleton className="h-9 w-24" />
+                                <Skeleton className="h-9 w-20" />
                                 <Skeleton className="h-9 w-24" />
                                 <Skeleton className="h-9 w-24" />
-                                <Skeleton className="h-9 w-24" />
+                                <Skeleton className="h-9 w-20" />
                             </div>
                         </CardContent>
                     </Card>

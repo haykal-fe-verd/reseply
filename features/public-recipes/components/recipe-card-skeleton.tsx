@@ -30,11 +30,14 @@ export function RecipeCardSkeleton() {
                 <Skeleton className="h-4 w-2/3" />
             </CardContent>
 
-            {/* Footer */}
+            {/* Footer: time | suka + porsi */}
             <CardFooter className="border-t border-border/50 px-4 py-3">
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between gap-2">
                     <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-16" />
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-4 w-16" />
+                    </div>
                 </div>
             </CardFooter>
         </Card>
