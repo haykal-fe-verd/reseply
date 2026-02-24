@@ -7,8 +7,7 @@
 
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { convertToModelMessages, streamText } from "ai";
-
-const OPEN_ROUTER_MODEL = "google/gemini-2.0-flash-001";
+import { OPEN_ROUTER_MODEL } from "@/lib/constants";
 
 function getOpenRouter() {
     const apiKey = process.env.OPEN_ROUTER_API_KEY;

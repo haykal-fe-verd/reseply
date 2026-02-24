@@ -20,3 +20,7 @@ export const APP_TYPE: string = packageJson.type;
 // RESEND
 export const RESEND_API_KEY: string | undefined = process.env.RESEND_API_KEY;
 export const RESEND_MAIL_FROM: string | undefined = process.env.RESEND_MAIL_FROM;
+
+// OPEN ROUTER
+export const OPEN_ROUTER_API_KEY: string | undefined = process.env.OPEN_ROUTER_API_KEY;
+export const OPEN_ROUTER_MODEL: string = "google/gemini-2.0-flash-001";

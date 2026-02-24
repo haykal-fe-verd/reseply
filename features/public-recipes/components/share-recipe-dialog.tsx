@@ -139,22 +139,54 @@ export function ShareRecipeDialog({ recipeTitle, recipeSlug, recipeDescription, 
             name: "Instagram",
             icon: <InstagramIcon className="size-5" />,
             color: "bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90",
-            onClick: () => {
-                copyToClipboard();
-                toast.info("Link disalin! Paste di Instagram Story atau DM Anda", {
-                    duration: 4000,
-                });
+            onClick: async () => {
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: recipeTitle,
+                            text: shareText,
+                            url: shareUrl,
+                        });
+                        toast.success("Berhasil dibagikan!");
+                    } catch (err) {
+                        if ((err as Error).name !== "AbortError") {
+                            copyToClipboard();
+                            toast.info("Link disalin! Paste di Story, status, atau DM Instagram");
+                        }
+                    }
+                } else {
+                    copyToClipboard();
+                    toast.info("Link disalin! Paste di Story, status, atau DM Instagram", {
+                        duration: 4000,
+                    });
+                }
             },
         },
         {
             name: "TikTok",
             icon: <TikTokIcon className="size-5" />,
             color: "bg-black hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200",
-            onClick: () => {
-                copyToClipboard();
-                toast.info("Link disalin! Paste di TikTok video atau bio Anda", {
-                    duration: 4000,
-                });
+            onClick: async () => {
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: recipeTitle,
+                            text: shareText,
+                            url: shareUrl,
+                        });
+                        toast.success("Berhasil dibagikan!");
+                    } catch (err) {
+                        if ((err as Error).name !== "AbortError") {
+                            copyToClipboard();
+                            toast.info("Link disalin! Paste di TikTok");
+                        }
+                    }
+                } else {
+                    copyToClipboard();
+                    toast.info("Link disalin! Paste di TikTok video atau bio Anda", {
+                        duration: 4000,
+                    });
+                }
             },
         },
         {

@@ -8,6 +8,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, CheckCircle2, ChefHat, Clock, Printer, Share2, Timer, Users } from "lucide-react";
+import { CalorieCheckerDialog } from "./calorie-checker-dialog";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
@@ -181,6 +182,11 @@ export function RecipeDetailPage({ slug }: RecipeDetailPageProps) {
                                 <Separator className="my-6" />
                                 <div className="flex flex-wrap gap-3">
                                     <FavoriteButton recipeId={recipe.id} variant="outline" size="sm" showLabel />
+                                    <CalorieCheckerDialog
+                                        ingredients={recipe.ingredients}
+                                        servings={recipe.servings}
+                                        recipeTitle={recipe.title}
+                                    />
                                     <ShareRecipeDialog
                                         recipeTitle={recipe.title}
                                         recipeSlug={recipe.slug}
