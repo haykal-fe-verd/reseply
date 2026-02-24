@@ -336,28 +336,37 @@ export function CookingMode({
                 </AnimatePresence>
             </main>
 
-            {/* Footer navigation */}
+            {/* Footer navigation – compact di mobile agar tidak terpotong */}
             {totalSteps > 0 && !completionVisible && (
-                <footer className="flex shrink-0 items-center justify-between gap-4 border-t border-border/50 bg-card/50 px-4 py-4 backdrop-blur-sm sm:px-6">
-                    <Button variant="outline" size="lg" className="gap-2" onClick={handleClose}>
+                <footer className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-border/50 bg-card/50 px-3 py-3 backdrop-blur-sm safe-area-pb sm:gap-4 sm:px-6 sm:py-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0 gap-1.5 sm:gap-2"
+                        onClick={handleClose}>
                         Keluar
                     </Button>
-                    <div className="flex items-center gap-4">
+                    <div className="flex shrink-0 items-center gap-2 sm:gap-4">
                         <Button
                             variant="outline"
-                            size="lg"
-                            className="gap-2"
+                            size="sm"
+                            className="min-w-0 shrink-0 gap-1.5 sm:gap-2"
                             onClick={goPrev}
                             disabled={currentIndex === 0}>
-                            <ChevronLeft className="size-5" />
-                            Sebelumnya
+                            <ChevronLeft className="size-4 sm:size-5" />
+                            <span className="hidden sm:inline">Sebelumnya</span>
                         </Button>
-                        <span className="min-w-12 text-center text-sm text-muted-foreground">
-                            {currentIndex + 1} / {totalSteps}
+                        <span className="min-w-10 shrink-0 text-center text-xs text-muted-foreground sm:min-w-12 sm:text-sm">
+                            {currentIndex + 1}/{totalSteps}
                         </span>
-                        <Button size="lg" className="gap-2" onClick={goNext}>
-                            {currentIndex === totalSteps - 1 ? "Selesai" : "Lanjut"}
-                            <ChevronRight className="size-5" />
+                        <Button
+                            size="sm"
+                            className="min-w-0 shrink-0 gap-1.5 sm:gap-2"
+                            onClick={goNext}>
+                            <span className="hidden sm:inline">
+                                {currentIndex === totalSteps - 1 ? "Selesai" : "Lanjut"}
+                            </span>
+                            <ChevronRight className="size-4 sm:size-5" />
                         </Button>
                     </div>
                 </footer>
