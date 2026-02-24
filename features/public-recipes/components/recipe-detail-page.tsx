@@ -9,6 +9,7 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, CheckCircle2, ChefHat, Clock, Printer, Share2, Timer, Users } from "lucide-react";
 import { CalorieCheckerDialog } from "./calorie-checker-dialog";
+import { CookingModeTrigger } from "./cooking-mode";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
@@ -184,6 +185,12 @@ export function RecipeDetailPage({ slug }: RecipeDetailPageProps) {
                                 <div className="flex flex-wrap gap-3">
                                     <FavoriteButton recipeId={recipe.id} variant="outline" size="sm" showLabel />
                                     <LikeButton recipeId={recipe.id} variant="outline" size="sm" showCount />
+                                    <CookingModeTrigger recipe={recipe}>
+                                        <Button variant="outline" size="sm" className="gap-2">
+                                            <ChefHat className="size-4" />
+                                            Coba Masak
+                                        </Button>
+                                    </CookingModeTrigger>
                                     <CalorieCheckerDialog
                                         ingredients={recipe.ingredients}
                                         servings={recipe.servings}
@@ -404,10 +411,11 @@ function RecipeDetailSkeleton() {
 
                             <Separator className="my-6" />
 
-                            {/* Actions: Simpan, Like, Cek Kalori, Bagikan, Cetak */}
+                            {/* Actions: Simpan, Like, Cek Kalori, Coba Masak, Bagikan, Cetak */}
                             <div className="flex flex-wrap gap-3">
                                 <Skeleton className="h-9 w-24" />
                                 <Skeleton className="h-9 w-20" />
+                                <Skeleton className="h-9 w-24" />
                                 <Skeleton className="h-9 w-24" />
                                 <Skeleton className="h-9 w-24" />
                                 <Skeleton className="h-9 w-20" />

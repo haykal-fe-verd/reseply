@@ -5,6 +5,7 @@
  */
 
 export * from "./components/calorie-checker-dialog";
+export * from "./components/cooking-mode";
 export * from "./components/print-recipe-dialog";
 export * from "./components/public-recipes-page";
 export * from "./components/recipe-card";
