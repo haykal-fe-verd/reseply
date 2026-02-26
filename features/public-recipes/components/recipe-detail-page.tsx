@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FavoriteButton } from "@/features/favorites";
+import { AddToCollectionDropdown, FavoriteButton } from "@/features/favorites";
 import { CommentSection, LikeButton } from "@/features/recipe-engagement";
 import {
     PrintRecipeDialog,
@@ -184,6 +184,12 @@ export function RecipeDetailPage({ slug }: RecipeDetailPageProps) {
                                 <Separator className="my-6" />
                                 <div className="flex flex-wrap gap-3">
                                     <FavoriteButton recipeId={recipe.id} variant="outline" size="sm" showLabel />
+                                    <AddToCollectionDropdown
+                                        recipeId={recipe.id}
+                                        showLabel
+                                        variant="outline"
+                                        size="sm"
+                                    />
                                     <LikeButton recipeId={recipe.id} variant="outline" size="sm" showCount />
                                     <CookingModeTrigger recipe={recipe}>
                                         <Button variant="outline" size="sm" className="gap-2">

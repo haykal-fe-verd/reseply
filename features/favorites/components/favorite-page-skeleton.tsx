@@ -3,7 +3,7 @@ import { FavoriteGridSkeleton } from "@/features/favorites";
 export function FavoritePageSkeleton() {
     return (
         <div className="min-h-screen bg-background">
-            <section className="bg-linear-to-br from-red-500/10 via-background to-background py-12 sm:py-16">
+            <section className="py-12 sm:py-16">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
                         <div className="mx-auto mb-4 size-16 animate-pulse rounded-full bg-muted" />

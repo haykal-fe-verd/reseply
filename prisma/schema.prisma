@@ -30,6 +30,7 @@ model User {
     banReason        String?
     banExpires       DateTime?
     favorites        Favorite[]
+    collections      Collection[]
     recipeLikes      RecipeLike[]
     recipeComments   RecipeComment[]
     conversations    VirtualChefConversation[]
@@ -140,22 +141,23 @@ model Category {
 }
 
 model Recipe {
-    id           String              @id @default(cuid())
-    title        String
-    slug         String              @unique
-    description  String?
-    imageUrl     String?
-    prepMinutes  Int?
-    cookMinutes  Int?
-    servings     Int?
-    createdAt    DateTime            @default(now())
-    updatedAt    DateTime            @updatedAt
-    ingredients  RecipeIngredient[]
-    instructions RecipeInstruction[]
-    categories   RecipeCategory[]
-    favorites    Favorite[]
-    likes        RecipeLike[]
-    comments     RecipeComment[]
+    id                String              @id @default(cuid())
+    title             String
+    slug              String              @unique
+    description       String?
+    imageUrl          String?
+    prepMinutes       Int?
+    cookMinutes       Int?
+    servings          Int?
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @updatedAt
+    ingredients       RecipeIngredient[]
+    instructions      RecipeInstruction[]
+    categories        RecipeCategory[]
+    favorites         Favorite[]
+    collectionRecipes CollectionRecipe[]
+    likes             RecipeLike[]
+    comments          RecipeComment[]
 
     @@index([slug])
     @@map("recipe")
@@ -173,6 +175,36 @@ model Favorite {
     @@index([userId])
     @@index([recipeId])
     @@map("favorite")
+}
+
+model Collection {
+    id        String            @id @default(cuid())
+    userId    String
+    name      String
+    slug      String            @unique
+    order     Int               @default(0)
+    createdAt DateTime          @default(now())
+    updatedAt DateTime          @updatedAt
+    user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+    recipes   CollectionRecipe[]
+
+    @@index([userId])
+    @@map("collection")
+}
+
+model CollectionRecipe {
+    id           String     @id @default(cuid())
+    collectionId String
+    recipeId     String
+    order        Int        @default(0)
+    createdAt    DateTime   @default(now())
+    collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+    recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+    @@unique([collectionId, recipeId])
+    @@index([collectionId])
+    @@index([recipeId])
+    @@map("collection_recipe")
 }
 
 model RecipeIngredient {

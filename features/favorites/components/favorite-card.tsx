@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { FavoriteButton, type FavoriteRecipe } from "@/features/favorites";
+import { AddToCollectionDropdown, FavoriteButton, type FavoriteRecipe } from "@/features/favorites";
 
 interface FavoriteCardProps {
     recipe: FavoriteRecipe;
@@ -32,8 +32,13 @@ export function FavoriteCard({ recipe, index = 0 }: FavoriteCardProps) {
             layout
             className="h-full">
             <Card className="group relative h-full overflow-hidden border-border/50 p-0 transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5">
-                {/* Favorite Button */}
-                <div className="absolute top-3 right-3 z-10">
+                {/* Actions: Add to collection + Favorite */}
+                <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
+                    <AddToCollectionDropdown
+                        recipeId={recipe.id}
+                        align="end"
+                        triggerClassName="hover:bg-background"
+                    />
                     <FavoriteButton
                         recipeId={recipe.id}
                         className="bg-background/80 backdrop-blur-sm hover:bg-background"
