@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Reseply Banner](public/og-image.png)
+![Reseply Banner](public/banner.webp)
 
 **Jelajahi Cita Rasa Kuliner Indonesia**
 
