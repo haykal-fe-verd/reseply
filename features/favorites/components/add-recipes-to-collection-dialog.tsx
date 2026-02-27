@@ -46,12 +46,14 @@ export function AddRecipesToCollectionDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[85vh] sm:max-w-lg">
-                <DialogTitle>Tambah Resep dari Favorit</DialogTitle>
+            <DialogContent className="max-h-[85vh] w-[calc(100vw-2rem)] max-w-lg overflow-hidden">
+                <DialogTitle className="truncate pr-8">
+                    Tambah Resep dari Favorit
+                </DialogTitle>
                 <DialogDescription>
                     Pilih resep dari daftar favorit Anda untuk ditambahkan ke koleksi ini.
                 </DialogDescription>
-                <ScrollArea className="max-h-[50vh] pr-2">
+                <ScrollArea className="max-h-[50vh] -mr-2 pr-2">
                     {favoritesNotInCollection.length === 0 ? (
                         <p className="py-8 text-center text-sm text-muted-foreground">
                             Semua favorit sudah ada di koleksi ini, atau Anda belum punya resep favorit.
@@ -61,37 +63,39 @@ export function AddRecipesToCollectionDialog({
                             {favoritesNotInCollection.map((recipe) => (
                                 <li
                                     key={recipe.id}
-                                    className="flex items-center gap-3 rounded-lg border border-border/60 p-3"
+                                    className="flex min-w-0 flex-col gap-2 rounded-lg border border-border/60 p-3 sm:flex-row sm:items-center sm:gap-3"
                                 >
-                                    <div className="relative size-14 shrink-0 overflow-hidden rounded-md bg-muted">
-                                        {recipe.imageUrl ? (
-                                            <Image
-                                                src={recipe.imageUrl}
-                                                alt=""
-                                                fill
-                                                className="object-cover"
-                                                sizes="56px"
-                                            />
-                                        ) : (
-                                            <span className="flex size-full items-center justify-center text-2xl">
-                                                🍳
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate font-medium text-foreground">
-                                            {recipe.title}
-                                        </p>
-                                        {recipe.description && (
-                                            <p className="line-clamp-1 text-xs text-muted-foreground">
-                                                {recipe.description}
+                                    <div className="flex min-w-0 flex-1 items-center gap-3 sm:flex-1">
+                                        <div className="relative size-14 shrink-0 overflow-hidden rounded-md bg-muted">
+                                            {recipe.imageUrl ? (
+                                                <Image
+                                                    src={recipe.imageUrl}
+                                                    alt=""
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="56px"
+                                                />
+                                            ) : (
+                                                <span className="flex size-full items-center justify-center text-2xl">
+                                                    🍳
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="min-w-0 flex-1 overflow-hidden">
+                                            <p className="truncate font-medium text-foreground" title={recipe.title}>
+                                                {recipe.title}
                                             </p>
-                                        )}
+                                            {recipe.description && (
+                                                <p className="line-clamp-1 text-xs text-muted-foreground">
+                                                    {recipe.description}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="shrink-0 gap-1"
+                                        className="w-full shrink-0 gap-1 sm:w-auto"
                                         disabled={isAdding}
                                         onClick={() =>
                                             addToCollection(
